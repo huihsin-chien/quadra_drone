@@ -1,3 +1,5 @@
+> # **Change WIFI, Password, Server's IP before you test MQTT.**
+
 # How to setup MQTT on your PC
 
 The following instructions show how to setup mqtt broker on your pc.
