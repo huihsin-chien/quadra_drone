@@ -1,24 +1,19 @@
 from machine import Pin
 from time import sleep
 import network
-from umqtt.simple import MQTTClient
 import config
+from simple import MQTTClient
+
 
 # Define LED
-led = Pin('LED', Pin.OUT)
+led = Pin(0, Pin.OUT)
 
 # Constants for MQTT Topics
 MQTT_TOPIC_LED = 'pico/led'
 
-# MQTT Parameters
-MQTT_SERVER = config.mqtt_server
-MQTT_PORT = 1883
-MQTT_USER = config.mqtt_username
-MQTT_PASSWORD = config.mqtt_password
-MQTT_CLIENT_ID = b'raspberrypi_picow'
 MQTT_KEEPALIVE = 1111000 #7200
 MQTT_SSL = False   # set to False if using local Mosquitto MQTT broker
-MQTT_SSL_PARAMS = {'server_hostname': MQTT_SERVER}
+MQTT_SSL_PARAMS = {'server_hostname': config.mqtt_server}
 
 # Init Wi-Fi Interface
 def initialize_wifi(ssid, password):
@@ -50,9 +45,9 @@ def initialize_wifi(ssid, password):
 # Connect to MQTT Broker
 def connect_mqtt():
     try:
-        client = MQTTClient(client_id=MQTT_CLIENT_ID,
-                    server=MQTT_SERVER,
-                    port=MQTT_PORT,
+        client = MQTTClient(client_id=b'raspberrypi_picow',
+                    server=config.mqtt_server,
+                    port=config.mqtt_port,
                     keepalive=MQTT_KEEPALIVE,
                     ssl=MQTT_SSL,
                     ssl_params=MQTT_SSL_PARAMS if MQTT_SSL else None)
@@ -71,7 +66,11 @@ def connect_mqtt():
 def subscribe(client, topic):
     client.subscribe(topic)
     print('Subscribe to topic:', topic)
-    
+
+def publish(client, topic, message):
+    client.publish(topic, message)
+    print('Published to topic:', topic, 'Message:', message)
+
 # Callback function that runs when you receive a message on subscribed topic
 def my_callback(topic, message):
     # Perform desired actions based on the subscribed topic and response
@@ -102,5 +101,8 @@ try:
             sleep(5)
             client.check_msg()
             print('Loop running')
+            if KeyboardInterrupt:
+                pico_msg = input('try to type something') 
+                publish(client, MQTT_TOPIC_LED, pico_msg)
 except Exception as e:
     print('Error:', e)

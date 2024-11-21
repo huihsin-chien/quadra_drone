@@ -1,7 +1,7 @@
 from machine import Pin
 from time import sleep
 import network
-from umqtt.simple import MQTTClient
+from simple import MQTTClient
 import config
 
 # Initialize Wi-Fi Interface
