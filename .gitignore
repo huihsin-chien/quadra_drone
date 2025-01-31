@@ -166,4 +166,4 @@ cython_debug/
 
 
 
-/quadra_drone\MQTT\images
+# /quadra_drone\MQTT\images
